@@ -1,8 +1,10 @@
 #pragma once
 
-#define Float double
-
 #include<cmath>
+#include<vector>
+#include<memory>
+
+#define Float double
 
 class vec4
 {
@@ -56,6 +58,11 @@ public:
 		return x * vec.x + y * vec.y + z * vec.z;
 	}
 
+	vec4 Cross(vec4 const& vec) const 
+	{
+		return vec4{ y*vec.z - z * vec.y, z*vec.x - x * vec.z, x*vec.y - y * vec.x, 0.0 };
+	}
+
 	Float square() const
 	{
 		return dot(*this);
@@ -97,4 +104,75 @@ inline Float clamp(Float x, Float min, Float max)
 	if (x < min) return min;
 	if (x > max) return max;
 	return x;
+}
+
+inline vec4 reflect(vec4 const& origin, vec4 const& normal)
+{
+	return origin - 2 * origin.dot(normal)*normal;
+}
+
+inline vec4 refract(vec4 const& origin, vec4 const& normal, Float EtaiOverEtat)
+{
+	Float CosTheta = (-origin).dot(normal);
+	vec4 Perp = EtaiOverEtat * (origin + CosTheta * normal);
+	vec4 Para = -std::sqrt(std::fabs(1.0 - Perp.square()))*normal;
+	return Perp + Para;
+}
+
+constexpr Float INF = std::numeric_limits<Float>::infinity();
+constexpr Float PI = 3.141592653;
+
+constexpr inline Float degreeToRadians(Float degree)
+{
+	return degree * PI / 180.0f;
+}
+
+
+#include<random>
+
+inline Float randomFloat(Float min = 0.0f, Float max = 1.0f)
+{
+	static std::uniform_real_distribution<Float> Distribution(min, max);
+	static std::random_device DefaultRD;
+	static std::mt19937 generator(DefaultRD());
+	return Distribution(generator);
+}
+
+inline Float randomFloat2(Float min = 0.0f, Float max = 1.0f)
+{
+	return min + (max - min) * rand() / (RAND_MAX + 1.0);
+}
+
+
+
+inline vec4 RandomVec3()
+{
+	return vec4(randomFloat(), randomFloat(), randomFloat());
+}
+
+inline vec4 RandomVec3(Float min, Float max)
+{
+	return vec4(randomFloat2(min, max), randomFloat2(min, max), randomFloat2(min, max));
+}
+
+inline vec4 RandomUnitSphere()
+{
+	while (true)
+	{
+		auto p = RandomVec3(-1.0f, 1.0f);
+		return p.normalize();
+
+		//if (p.square() >= 1.0) continue;
+		//return p;
+	}
+}
+
+inline vec4 RandomUnitHemiSphere(vec4 const& normal)
+{
+	auto p = RandomVec3(-1.0f, 1.0f).normalize();
+	if (p.dot(normal) > 0.0f)
+	{
+		return p;
+	}
+	return -p;
 }

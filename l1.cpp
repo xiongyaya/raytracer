@@ -8,6 +8,7 @@
 #include "vec.h"
 #include "hittable.h"
 #include "material.h"
+#include "Camera.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -59,34 +60,27 @@ int main()
 	int height = 256;
 	int Samples = 50;
 	int Depth = 10;
-	Float viewportHeight = 2;
-	Float viewportWidth = viewportHeight * width / height;
+	Float AspectRatio = width / height;
 
 	auto origin = vec4{ 0.0f,0.0f,0.0f,0.0f };
-	auto horizontal = vec4{ viewportWidth, 0.0f, 0.0f, 0.0f };
-	auto vertical = vec4{ 0.0f, viewportHeight, 0.0f,0.0f };
 	auto focalLenght = vec4{ 0.0f, 0.0f, 1.0f,0.0f };
-	auto lowLeftCorner = origin - horizontal / 2 - vertical / 2- focalLenght;
 
 	std::vector<Colori3> Data;
 	Data.resize(width*height);
 
-	auto materialGround = std::make_shared<Lambertian>(Colorf3(0.8f, 0.8f, 0.0f));
-	auto materialCenter = std::make_shared<Lambertian>(Colorf3(0.7f, 0.3f, 0.3f));
-	auto materialLeft = std::make_shared<Dielectric>(1.5);
-	auto materialRight = std::make_shared<Metal>(Colorf3(0.8f, 0.6f, 0.2f), 1.0);
-
-
-	//hittableList world;
-	//world.add(std::make_shared<Sphere>(vec4(0.0f, 0.0f, -1.0f), 0.5f));
-	//world.add(std::make_shared<Sphere>(vec4(0.0f, -100.5f, -1.0f), 100.0f));
-
+	Camera cam(vec4(-2, 2, 1), vec4(0, 0, -1), vec4(0, 1, 0), 90, AspectRatio);
 	hittableList world;
-	world.add(std::make_shared<Sphere>(vec4(0.0f, -100.5f, -1.0f), 100.0f, materialGround));
-	world.add(std::make_shared<Sphere>(vec4(0.0f, 0.0f, -1.0f), 0.5f, materialCenter));
-	world.add(std::make_shared<Sphere>(vec4(-1.0f, 0.0f, -1.0f), 0.5f, materialLeft));
-	world.add(std::make_shared<Sphere>(vec4(1.0f, 0.0f, -1.0f), 0.5f, materialRight));
 
+	auto material_ground = std::make_shared<Lambertian>(Colorf3(0.8, 0.8, 0.0));
+	auto material_center = std::make_shared<Lambertian>(Colorf3(0.1, 0.2, 0.5));
+	auto material_left = std::make_shared<Dielectric>(1.5);
+	auto material_right = std::make_shared<Metal>(Colorf3(0.8, 0.6, 0.2), 0.0);
+
+	world.add(std::make_shared<Sphere>(vec4(0.0, -100.5, -1.0), 100.0, material_ground));
+	world.add(std::make_shared<Sphere>(vec4(0.0, 0.0, -1.0), 0.5, material_center));
+	world.add(std::make_shared<Sphere>(vec4(-1.0, 0.0, -1.0), 0.5, material_left));
+	world.add(std::make_shared<Sphere>(vec4(-1.0, 0.0, -1.0), -0.45, material_left));
+	world.add(std::make_shared<Sphere>(vec4(1.0, 0.0, -1.0), 0.5, material_right));
 
 	for (int i = 0; i < height; ++i)
 	{
@@ -97,9 +91,8 @@ int main()
 			{
 				auto u = Float(i+randomFloat()) / (height - 1);
 				auto v = Float(j + randomFloat()) / (width - 1);
-				ray4 r( origin, lowLeftCorner + u * horizontal + v * vertical );
-				
-				ColorF += RayColor(r, world, Depth);
+				ray4 ray = cam.GetRay(u, v);
+				ColorF += RayColor(ray, world, Depth);
 			}
 			ColorF /= Samples;
 			Data.at(j*width + i) = ColorF.toColori3();

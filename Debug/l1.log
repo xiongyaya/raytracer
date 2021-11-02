@@ -1,0 +1,18 @@
+﻿  l1.cpp
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1801): warning C4244: “参数”: 从“_Ty”转换到“float”，可能丢失数据
+          with
+          [
+              _Ty=double
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1865): note: 参见对正在编译的函数 模板 实例化“std::_Ref_count_obj<_Ty>::_Ref_count_obj<double>(double &&)”的引用
+          with
+          [
+              _Ty=Dielectric
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1866): note: 参见对正在编译的函数 模板 实例化“std::_Ref_count_obj<_Ty>::_Ref_count_obj<double>(double &&)”的引用
+          with
+          [
+              _Ty=Dielectric
+          ]
+  c:\code\raytracing.github.io\l1\l1.cpp(76): note: 参见对正在编译的函数 模板 实例化“std::shared_ptr<Dielectric> std::make_shared<Dielectric,double>(double &&)”的引用
+  l1.vcxproj -> C:\Code\raytracing.github.io\build\Debug\l1.exe

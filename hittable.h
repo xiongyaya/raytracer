@@ -2,9 +2,7 @@
 
 #include"vec.h"
 #include"material.h"   
-#include<cmath>
-#include<vector>
-#include<memory>
+
 
 
 struct HitResult
@@ -108,59 +106,4 @@ struct hittableList: public Hittable
 
 };
 
-constexpr Float INF = std::numeric_limits<Float>::infinity();
-constexpr Float PI = 3.141592653;
 
-constexpr inline Float degreeToRadians(Float degree)
-{
-	return degree * PI / 180.0f;
-}
-
-#include<random>
-
-inline Float randomFloat(Float min=0.0f, Float max=1.0f)
-{
-	static std::uniform_real_distribution<Float> Distribution(min,max);
-	static std::random_device DefaultRD;
-	static std::mt19937 generator(DefaultRD());
-	return Distribution(generator);
-}
-
-inline Float randomFloat2(Float min = 0.0f, Float max = 1.0f)
-{
-	return min + (max-min) * rand() / (RAND_MAX+1.0);
-}
-
-
-
-inline vec4 RandomVec3()
-{
-	return vec4(randomFloat(), randomFloat(), randomFloat());
-}
-
-inline vec4 RandomVec3(Float min, Float max)
-{
-	return vec4(randomFloat2(min,max), randomFloat2(min, max), randomFloat2(min, max));
-}
-
-inline vec4 RandomUnitSphere()
-{
-	while (true)
-	{
-		auto p = RandomVec3(-1.0f, 1.0f);
-		return p.normalize();
-
-		//if (p.square() >= 1.0) continue;
-		//return p;
-	}
-}
-
-inline vec4 RandomUnitHemiSphere(vec4 const& normal)
-{
-	auto p = RandomVec3(-1.0f, 1.0f).normalize();
-	if (p.dot(normal) > 0.0f)
-	{
-		return p;
-	}
-	return -p;
-}
