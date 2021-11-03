@@ -8,27 +8,34 @@ struct Camera
 	vec4 Horizontal;
 	vec4 vertical;
 	vec4 LowLeftCorner;
+	Float LensRadius;
 
-	Camera(vec4 const& LookFrom, vec4 const& LookAt, vec4 const& Up,
-		Float Fov, Float AspectRatio)
+	vec4 Forward, Right, Up;
+
+
+	Camera(vec4 const& LookFrom, vec4 const& LookAt, vec4 const& InUp,
+		Float Fov, Float AspectRatio, Float Aperture, Float FocusDist)
 		:origin{LookFrom}
 	{
 		Float Radian = degreeToRadians(Fov);
 		Float H = std::tan(Radian / 2);
-		Float ViewportHeight = 2.0*H;
-		Float ViewportWidth = AspectRatio * ViewportHeight;
+		Float  ViewportHeight = 2.0*H;
+		Float  ViewportWidth  = ViewportHeight * AspectRatio;
 
-		auto CForward = (LookAt - LookFrom).normalize();
-		auto CRight = (CForward.Cross(Up)).normalize();
-		auto CUp = CRight.Cross(CForward);
+		Forward = (LookFrom - LookAt ).normalize();
+		Right = (InUp.Cross(Forward)).normalize();
+		Up = Forward.Cross(Right);
 
-		Horizontal = CRight * ViewportWidth;
-		vertical = ViewportHeight * Up;
-		LowLeftCorner = origin - Horizontal / 2.0 - vertical / 2.0 + CForward;
+		Horizontal = FocusDist*Right * ViewportWidth;
+		vertical = FocusDist*ViewportHeight * Up;
+		LowLeftCorner = origin - Horizontal / 2.0 - vertical / 2.0 - FocusDist*Forward;
+		LensRadius = Aperture / 2;
 	}
 
 	ray4 GetRay(Float S, Float T)
 	{
-		return ray4{ origin, LowLeftCorner + S * Horizontal + T * vertical - origin };
+		 vec4 rd = LensRadius * RandomInUnitDisk();
+		 vec4 offset = Right * rd.x + Up * rd.y;
+		return ray4{ origin+offset, LowLeftCorner + S * Horizontal + T * vertical - origin - offset };
 	}
 };

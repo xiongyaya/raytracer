@@ -176,3 +176,14 @@ inline vec4 RandomUnitHemiSphere(vec4 const& normal)
 	}
 	return -p;
 }
+
+inline vec4 RandomInUnitDisk()
+{
+	while (true) {
+		Float X = randomFloat2(-1,1);
+		Float Y = randomFloat2(-1,1);
+		vec4 v{ X,Y,0 };
+		if(v.length()>=1) continue;
+		return v;
+	}
+}

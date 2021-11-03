@@ -84,6 +84,11 @@ struct Colorf3
 		uint_fast8_t ib = static_cast<uint_fast8_t>(256 * clamp(std::sqrt(b), 0.0f, 0.999f));
 		return Colori3{ ir, ig, ib };
 	}
+
+	static Colorf3 Random(Float min = 0.0, Float max=1.0)
+	{
+		return Colorf3{ randomFloat2(min,max),randomFloat2(min,max),randomFloat2(min,max) };
+	}
 };
 
 
