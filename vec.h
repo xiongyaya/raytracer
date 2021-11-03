@@ -86,11 +86,13 @@ struct ray4
 {
 public:
 	vec4 origin{}, dir{};
+	Float time;
 
 	ray4() {}
-	ray4(vec4 const& InOrigin, vec4 const& InDir)
+	ray4(vec4 const& InOrigin, vec4 const& InDir, Float InTime)
 		: origin{InOrigin}
 		, dir{InDir.normalize()}
+		, time{ InTime }
 	{}
 
 	vec4 at(Float t) const

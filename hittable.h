@@ -76,6 +76,69 @@ struct Sphere :public Hittable
 	}
 };
 
+struct MovingSphere : public Hittable
+{
+	vec4 Center0, Center1, Vec;
+	Float Radius;
+	Float Time0, Time1, TimeLengthInv;
+	std::shared_ptr<Material> MatRef;
+
+	MovingSphere() {}
+	MovingSphere( vec4 const& InCenter0, vec4 const& InCenter1, Float InTime0, Float InTime1,
+		Float InRadius, std::shared_ptr<Material>& InMatRef)
+		: Center0{Center0}
+		, Center1{Center1}
+		, Time0{InTime0}
+		, Time1{InTime1}
+		, Radius{InRadius}
+		, MatRef{InMatRef}
+		, TimeLengthInv{1.0 / (InTime1-InTime0)}
+		, Vec{InCenter1-InCenter0}
+	{}
+
+	virtual bool hit(const ray4& ray, Float tmin, Float tmax, HitResult& result) const override
+	{
+		vec4 TimeCenter = Center(ray.time);
+		vec4 oc = ray.origin - TimeCenter;
+		auto a = ray.dir.square();
+		auto hb = oc.dot(ray.dir);
+		auto c = oc.square() - Radius * Radius;
+		auto disc = hb * hb - a * c;
+		if (disc > 0.0f)
+		{
+			auto root = std::sqrt(disc);
+
+			auto t = (-hb - root) / a;
+			if (t < tmax && t > tmin)
+			{
+				result.t = t;
+				result.point = ray.at(t);
+				auto outwardNormal = (result.point - TimeCenter) / Radius;
+				result.setFaceNormal(ray, outwardNormal);
+				result.Material = MatRef;
+				return true;
+			}
+
+			t = (-hb + root) / a;
+			if (t < tmax && t > tmin)
+			{
+				result.t = t;
+				result.point = ray.at(t);
+				auto outwardNormal = (result.point - TimeCenter) / Radius;
+				result.setFaceNormal(ray, outwardNormal);
+				result.Material = MatRef;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	vec4 Center(Float Time) const
+	{
+		return Center0 + (Time - Time0) * TimeLengthInv * Vec;
+	}
+};
+
 
 struct hittableList: public Hittable
 {

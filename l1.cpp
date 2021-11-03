@@ -61,9 +61,9 @@ hittableList RandomScene(hittableList& world) {
 	world.add(make_shared<Sphere>(vec4(0, -1000, 0), 1000, ground_material));
 
 	
-
-	for (int a = -11; a < 11; a++) {
-		for (int b = -11; b < 11; b++) {
+	int count = 4;
+	for (int a = -count; a < count; a++) {
+		for (int b = -count; b < count; b++) {
 			auto choose_mat = randomFloat();
 			vec4 center(a + 0.9*randomFloat(), 0.2, b + 0.9*randomFloat());
 
@@ -73,8 +73,9 @@ hittableList RandomScene(hittableList& world) {
 				if (choose_mat < 0.8) {
 					// diffuse
 					auto albedo = Colorf3::Random() * Colorf3::Random();
+					auto Center1 = center + vec4(0.0, randomFloat(0, 0.5), 0);
 					sphere_material = make_shared<Lambertian>(albedo);
-					world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+					world.add(make_shared<MovingSphere>(center, Center1, 0.0,1.0, 0.2, sphere_material));
 				}
 				else if (choose_mat < 0.95) {
 					// metal
@@ -92,11 +93,13 @@ hittableList RandomScene(hittableList& world) {
 		}
 	}
 
+	
 	auto material1 = make_shared<Dielectric>(1.5);
-	world.add(make_shared<Sphere>(vec4(0, 1, 0), 1.0, material1));
+	world.add(make_shared<Sphere>(vec4(0, 1, 0),  1.0, material1));
 
-	auto material2 = make_shared<Lambertian>(Colorf3(0.4, 0.2, 0.1));
-	world.add(make_shared<Sphere>(vec4(-4, 1, 0), 1.0, material2));
+	auto Center1 = vec4(-4, 1, 0) + vec4(0.0, randomFloat(0, 2), 0);
+	shared_ptr<Material> material2 = make_shared<Lambertian>(Colorf3(0.4, 0.2, 0.1));
+	world.add(make_shared<MovingSphere>(vec4(-4, 1, 0),Center1,0.0,1.0, 1.0, material2));
 
 	auto material3 = make_shared<Metal>(Colorf3(0.7, 0.6, 0.5), 0.0);
 	world.add(make_shared<Sphere>(vec4(4, 1, 0), 1.0, material3));
@@ -108,9 +111,9 @@ hittableList RandomScene(hittableList& world) {
 int main()
 {
 	Float AspectRatio = 3.0 / 2.0;
-	int width = 1200;
+	int width = 200;
 	int height = width/AspectRatio;
-	int Samples = 100;
+	int Samples = 20;
 	int Depth = 10;
 	auto focalLenght = vec4{ 0.0f, 0.0f, 1.0f,0.0f };
 
@@ -118,7 +121,7 @@ int main()
 	Data.resize(width*height);
 
 	Float Len = (vec4(-2, 2, 1) - vec4(0, 0, -1)).length();
-	Camera cam(vec4(13, 2, 3), vec4(0, 0, 0), vec4(0, 1, 0), 20, AspectRatio,0.1, 10);
+	Camera cam(vec4(13, 2, 3), vec4(0, 0, 0), vec4(0, 1, 0), 20, AspectRatio,0.1, 10, 0.0,1.0);
 	hittableList world;
 	RandomScene(world);
 

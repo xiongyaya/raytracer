@@ -11,11 +11,14 @@ struct Camera
 	Float LensRadius;
 
 	vec4 Forward, Right, Up;
-
+	Float StartTime, EndTime;
 
 	Camera(vec4 const& LookFrom, vec4 const& LookAt, vec4 const& InUp,
-		Float Fov, Float AspectRatio, Float Aperture, Float FocusDist)
+		Float Fov, Float AspectRatio, Float Aperture, Float FocusDist
+		,Float InStartTime, Float InEndTime)
 		:origin{LookFrom}
+		, StartTime{InStartTime}
+		, EndTime{InEndTime}
 	{
 		Float Radian = degreeToRadians(Fov);
 		Float H = std::tan(Radian / 2);
@@ -36,6 +39,6 @@ struct Camera
 	{
 		 vec4 rd = LensRadius * RandomInUnitDisk();
 		 vec4 offset = Right * rd.x + Up * rd.y;
-		return ray4{ origin+offset, LowLeftCorner + S * Horizontal + T * vertical - origin - offset };
+		return ray4{ origin+offset, LowLeftCorner + S * Horizontal + T * vertical - origin - offset, randomFloat(StartTime, EndTime) };
 	}
 };

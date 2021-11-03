@@ -5,6 +5,7 @@ bool Lambertian::scatter(ray4 const& ray, HitResult const& hitResult, Colorf3& A
 {
 	scatterRay.origin = hitResult.point;
 	scatterRay.dir = RandomUnitHemiSphere(hitResult.normal);
+	scatterRay.time = ray.time;
 	Attenuation = albedo;
 	return true;
 }
