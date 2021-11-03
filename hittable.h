@@ -86,8 +86,8 @@ struct MovingSphere : public Hittable
 	MovingSphere() {}
 	MovingSphere( vec4 const& InCenter0, vec4 const& InCenter1, Float InTime0, Float InTime1,
 		Float InRadius, std::shared_ptr<Material>& InMatRef)
-		: Center0{Center0}
-		, Center1{Center1}
+		: Center0{InCenter0}
+		, Center1{InCenter1}
 		, Time0{InTime0}
 		, Time1{InTime1}
 		, Radius{InRadius}

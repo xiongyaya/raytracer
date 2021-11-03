@@ -113,7 +113,7 @@ int main()
 	Float AspectRatio = 3.0 / 2.0;
 	int width = 200;
 	int height = width/AspectRatio;
-	int Samples = 20;
+	int Samples = 100;
 	int Depth = 10;
 	auto focalLenght = vec4{ 0.0f, 0.0f, 1.0f,0.0f };
 
